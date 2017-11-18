@@ -1,26 +1,41 @@
+const path = require('path');
+const webPackHtmlPlugin = require('html-webpack-plugin');
+
+// i need to create a dist directory
 module.exports = {
-  entry: [
-    './src/index.jsx'
-  ],
+  entry: './src/index.jsx',
+
   output: {
-    path: __dirname,
-    publicPath: '/',
+    path: path.join(__dirname, 'dist'),
     filename: 'bundle.js'
   },
+
   module: {
-    loaders: [{
-      exclude: /node_modules/,
-      loader: 'babel',
-      query: {
-        presets: ['react', 'es2015', 'stage-1']
+    rules:[
+      {
+        use: 'babel-loader',
+        test: /\.jsx$/,
+        exclude: /node_modules/
+      },
+      {
+        use:['style-loader', 'css-loader'],
+        test: /\.css$/
       }
-    }]
+    ]
   },
+
   resolve: {
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.js', '.jsx']
   },
+
   devServer: {
     historyApiFallback: true,
-    contentBase: './'
-  }
+    contentBase: path.join(__dirname, 'dist')
+  },
+
+  plugins:[
+    new webPackHtmlPlugin({
+      template: './src/index.html'
+    })
+  ]
 };
