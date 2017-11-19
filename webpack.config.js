@@ -1,13 +1,27 @@
 const path = require('path');
+const webpack = require('webpack');
 const webPackHtmlPlugin = require('html-webpack-plugin');
 
+const VENDOR_LIST = [
+  // "faker","react-input-range"
+  "lodash", "react",
+  "react-dom",
+  "react-redux",
+  "react-router",
+  "redux",
+  "redux-form",
+  "redux-thunk"
+];
 // i need to create a dist directory
 module.exports = {
-  entry: './src/index.jsx',
+  entry: {
+    bundle: './src/index.jsx',
+    vendors: VENDOR_LIST
+  },
 
   output: {
     path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: '[name].[chunkhash].js'
   },
 
   module: {
@@ -34,8 +48,13 @@ module.exports = {
   },
 
   plugins:[
+    new webpack.optimize.CommonsChunkPlugin({
+      names:['vendors', 'manifest']
+    }),
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.optimize.UglifyJsPlugin(),// reduce bundled sizes
     new webPackHtmlPlugin({
-      template: './src/index.html'
-    })
+      template: './index.html'
+    }),
   ]
 };
